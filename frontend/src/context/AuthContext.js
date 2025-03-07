@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 
     // Check if user is logged in when the app loads
     useEffect(() => {
-        axios.get("http://localhost:5000/api/auth/me", { withCredentials: true })
+        axios.get("http://localhost:5001/api/auth/me", { withCredentials: true })
             .then((res) => setUser(res.data.user))
             .catch(() => setUser(null));
     }, []);
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+        await axios.post("http://localhost:5001/api/auth/logout", {}, { withCredentials: true });
         setUser(null);
     };
 
