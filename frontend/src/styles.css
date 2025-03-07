@@ -1,0 +1,11 @@
+.category-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .category-icon p {
+    margin: 5px 0 0;
+  }
+  
