@@ -7,6 +7,8 @@ const sequelize = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const restaurantRoutes = require("./routes/restaurantRoutes");
+const dishRoutes = require("./routes/dishRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
@@ -25,12 +27,14 @@ app.use(
     })
 );
 
-// Routes
+// ✅ Ensure routes are registered BEFORE syncing the database
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/dishes", dishRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Sync database models
-sequelize.sync()
+sequelize.sync({ force: false })
     .then(() => console.log("Database & tables synchronized"))
     .catch(err => console.error("Error syncing database:", err));
 
