@@ -3,7 +3,9 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Favourite  from "./pages/Favourites";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Menu from "./pages/Menu";
@@ -27,7 +29,7 @@ function App() {
     // Redirect to dashboard when user logs in
     useEffect(() => {
 
-    const allowedRoutes = ["/cart", "/restaurants/:id", "/dashboard"]; // ✅ Expandable list
+    const allowedRoutes = ["/cart", "/restaurants/:id", "/dashboard", "/favourite"]; // ✅ Expandable list
 
     const isAllowed = allowedRoutes.some((route) => 
         location.pathname.startsWith(route.replace(":id", "")) // ✅ Handle dynamic routes
@@ -42,12 +44,13 @@ function App() {
         <>
             <Navbar />
             <Routes>
-                <Route path="/" element={!user ? <LandingPage /> : <Dashboard />} />
+                <Route path="/" element={!user ? <Home /> : <Dashboard />} />
                 <Route path="/signup" element={!user ? <Signup /> : <Dashboard />} />
                 <Route path="/login" element={!user ? <Login /> : <Dashboard />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/restaurants/:id" element={<Menu />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/favourite" element={<Favourite />} />
             </Routes>
             <Footer />
         </>

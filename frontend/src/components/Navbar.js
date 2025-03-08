@@ -69,7 +69,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     padding: "15px 20px",
-    backgroundColor: "#ff9900",
+    backgroundColor: "#00623b",
     color: "white",
     fontSize: "18px",
   },
@@ -83,7 +83,7 @@ const styles = {
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: "red",
+    backgroundColor: "darkgreen",
     color: "white",
     border: "none",
     padding: "5px 10px",

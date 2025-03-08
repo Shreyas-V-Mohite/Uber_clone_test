@@ -17,8 +17,7 @@
     min-width: 100px;
     padding: 10px;
     margin: 5px;
-    border-radius: 10px;
-    background-color: #f8f9fa;
+    border-radius: 10px;    
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
   }
@@ -35,6 +34,7 @@
     text-decoration: none;
     color: #000;
     margin-right: 10px;
+    font-size: small;
   }
   
   .footer a:hover {

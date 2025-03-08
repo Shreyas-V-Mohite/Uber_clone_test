@@ -28,7 +28,7 @@ const Sidebar = () => {
             <ListGroup.Item action onClick={() => navigate("/orders")}>
               <FaShoppingBag className="me-2" /> Orders
             </ListGroup.Item>
-            <ListGroup.Item action onClick={() => navigate("/favourites")}>
+            <ListGroup.Item action onClick={() => navigate("/favourite")}>
               <FaHeart className="me-2" /> Favorites
             </ListGroup.Item>
             <ListGroup.Item action onClick={() => navigate("/customer-profile")}>

@@ -11,6 +11,20 @@ export const signup = async (userData) => {
 export const login = async (credentials) => {
     return axios.post(`${API_URL}/auth/login`, credentials);
 };
+//is favourite
+export const toggleFavoriteRestaurant = async (restaurantId, isFavorite) => {
+  try {
+      const response = await axios.post(`${API_URL}/favorites/toggle`, {
+          restaurantId,
+          isFavorite
+      });
+      return response.data;
+  } catch (error) {
+      console.warn(`Backend not available for favorite toggle, using local state.`);
+      return { success: true }; // Simulate successful API response
+  }
+};
+
 
 // Fetch Restaurants (Use Placeholder Data Until Backend is Ready)
 export const getRestaurants = async () => {
@@ -20,10 +34,10 @@ export const getRestaurants = async () => {
     } catch (error) {
         console.warn("Backend not available, using placeholder data.");
         return [
-            { id: 1, name: "Mcdonalds", cuisine: "Fast Food", rating: 4.5, image: "https://via.placeholder.com/200" },
-            { id: 2, name: "Annapoorna", cuisine: "Indian Cuisine", rating: 3.8, image: "https://via.placeholder.com/200" },
-            { id: 3, name: "Urban Momo", cuisine: "Nepali Cuisine", rating: 4.2, image: "https://via.placeholder.com/200" },
-            { id: 4, name: "Chipotle Mexican Grill", cuisine: "Mexican, Fast Food", rating: 4.7, image: "https://via.placeholder.com/200" }
+            { id: 1, name: "Mcdonalds", cuisine: "Fast Food", rating: 4.5, image: "/images/burger.jpg" },
+            { id: 2, name: "Annapoorna", cuisine: "Indian Cuisine", rating: 3.8, image: "/images/biryani.jpg" },
+            { id: 3, name: "Urban Momo", cuisine: "Nepali Cuisine", rating: 4.2, image: "/images/momos.jpg" },
+            { id: 4, name: "Chipotle Mexican Grill", cuisine: "Mexican, Fast Food", rating: 4.7, image: "/images/chipotle.jpg" }
         ];
     }
 };
@@ -42,9 +56,10 @@ export const getRestaurantDetails = async (id) => {
             rating: 4.5,
             image: "https://via.placeholder.com/600",
             menu: [
-                { id: 1, name: "Burger", price: 5.99, image: "https://via.placeholder.com/150" },
-                { id: 2, name: "Pasta", price: 7.99, image: "https://via.placeholder.com/150" },
-                { id: 3, name: "Pizza", price: 9.99, image: "https://via.placeholder.com/150" }
+                { id: 1, name: "Mcdonalds", price: 5.99, image: "/images/burger.jpg" },
+                { id: 2, name: "Annapoorna", price: 7.99, image: "/images/biryani.jpg" },
+                { id: 3, name: "Urban Momo", price: 9.99, image: "/images/momos.jpg" },
+                { id: 4, name: "Chipotle Mexican", price: 9.99, image: "/images/chipotle.jpg" },
             ]
         };
     }

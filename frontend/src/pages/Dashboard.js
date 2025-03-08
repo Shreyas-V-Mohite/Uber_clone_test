@@ -5,15 +5,17 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-import { getRestaurants } from "../services/api";
 import Sidebar from "../components/Sidebar";
 import { Link } from "react-router-dom"; // Import Link for navigation
+import { getRestaurants, toggleFavoriteRestaurant } from "../services/api";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+
 
 // ✅ Categories for Filtering
 const categories = [
   { name: "Burger", icon: "🍔" }, { name: "Caribbean", icon: "🌴" }, { name: "Drinks", icon: "🥤" },
   { name: "Fast Food", icon: "🍟" }, { name: "Grocery", icon: "🛒" }, { name: "Dessert", icon: "🍰" },
-  { name: "Japanese", icon: "🍜" }, { name: "Italian", icon: "🍝" }, { name: "Box Catering", icon: "📦" },
+  { name: "Japanese", icon: "🍜" }, { name: "Italian", icon: "🍝" }, 
   { name: "Seafood", icon: "🦐" }, { name: "Sushi", icon: "🍣" }, { name: "Alcohol", icon: "🍷" },
   { name: "Wings", icon: "🍗" }
 ];
@@ -34,13 +36,27 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  const toggleFavorite = async (restaurantId) => {
+    setRestaurants((prevRestaurants) =>
+        prevRestaurants.map((restaurant) =>
+            restaurant.id === restaurantId
+                ? { ...restaurant, isFavorite: !restaurant.isFavorite }
+                : restaurant
+        )
+    );
+  
+    // Call the API function from api.js
+    const selectedRestaurant = restaurants.find((r) => r.id === restaurantId);
+    await toggleFavoriteRestaurant(restaurantId, !selectedRestaurant?.isFavorite);
+  };
+
   return (
     <>
       <TopNavbar />
       <Container className="mt-4">
         <CategorySwiper />
         <SortingButtons />
-        <FeaturedRestaurants restaurants={restaurants} />
+        <FeaturedRestaurants restaurants={restaurants} toggleFavorite={toggleFavorite} />
       </Container>
     </>
   );
@@ -51,8 +67,8 @@ const TopNavbar = () => (
   <Navbar bg="light" expand="lg" className="px-4 shadow-sm">
     <Sidebar /> {/* Sidebar Button */}
     <Navbar.Brand href="#">Uber Eats</Navbar.Brand>
-    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-    <Navbar.Collapse id="basic-navbar-nav">
+    {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
+    {/* <Navbar.Collapse id="basic-navbar-nav"> */}
       <Form className="d-flex mx-auto">
         <FormControl type="search" placeholder="Search Uber Eats" className="me-2" />
         <Button variant="outline-success"><FaSearch /></Button>
@@ -62,13 +78,13 @@ const TopNavbar = () => (
           <FaShoppingCart />
         </Link>
       </Button>
-    </Navbar.Collapse>
+    {/* </Navbar.Collapse> */}
   </Navbar>
 );
 
 // ✅ Extracted Category Swiper Component
 const CategorySwiper = () => (
-  <Swiper modules={[Navigation]} navigation spaceBetween={10} slidesPerView={5} className="category-swiper">
+  <Swiper modules={[Navigation]} navigation spaceBetween={10} slidesPerView={10} className="category-swiper">
     {categories.map((category, index) => (
       <SwiperSlide key={index}>
         <div className="category-card">
@@ -89,24 +105,95 @@ const SortingButtons = () => (
   </div>
 );
 
-// ✅ Extracted Featured Restaurants Component
-const FeaturedRestaurants = ({ restaurants }) => (
+
+// const FeaturedRestaurants = ({ restaurants, toggleFavorite }) => (
+//   <>
+//     <h4 className="mb-3">Featured on Uber Eats</h4>
+//     <Row>
+//       {restaurants.length > 0 ? (
+//         restaurants.map((restaurant) => (
+//           <Col key={restaurant.id} xs={12} md={3} className="mb-4">
+//             <Link to={`/restaurants/${restaurant.id}`} className="text-decoration-none text-dark">
+//               <Card className="h-100 shadow-sm position-relative">
+                
+//                 {/* Heart Icon for Favorite */}
+//                 <div 
+//                   className="position-absolute top-0 end-0 p-2"
+//                   style={{ cursor: "pointer" }}
+//                   onClick={(e) => {
+//                       e.preventDefault(); // Prevents page navigation
+//                       toggleFavorite(restaurant.id);
+//                   }}
+//                 >
+//                   {restaurant.isFavorite ? (
+//                     <FaHeart size={24} color="red" /> // Filled heart (favorited)
+//                   ) : (
+//                     <FaRegHeart size={24} color="gray" /> // Empty heart (not favorited)
+//                   )}
+//                 </div>
+
+//                 <Card.Img variant="top" src={restaurant.image} />
+//                 <Card.Body>
+//                   <Card.Title>{restaurant.name}</Card.Title>
+//                   <Card.Text>{restaurant.cuisine}</Card.Text>
+//                   <Card.Text><strong>⭐ {restaurant.rating}</strong></Card.Text>
+//                 </Card.Body>
+//               </Card>
+//             </Link>
+//           </Col>
+//         ))
+//       ) : (
+//         <p className="text-center">Loading restaurants...</p>
+//       )}
+//     </Row>
+//   </>
+// );
+
+const FeaturedRestaurants = ({ restaurants, toggleFavorite }) => (
   <>
-    <h4 className="mb-3">Featured on Uber Eats</h4>
-    <Row>
+    <h4 className="mb-4 fw-bold">Featured on Uber Eats</h4>
+    <Row className="g-4">
       {restaurants.length > 0 ? (
         restaurants.map((restaurant) => (
-          <Col key={restaurant.id} xs={12} md={3} className="mb-4">
-            <Link to={`/restaurants/${restaurant.id}`} className="text-decoration-none text-dark">
-              <Card className="h-100 shadow-sm">
-                <Card.Img variant="top" src={restaurant.image} />
-                <Card.Body>
-                  <Card.Title>{restaurant.name}</Card.Title>
-                  <Card.Text>{restaurant.cuisine}</Card.Text>
-                  <Card.Text><strong>⭐ {restaurant.rating}</strong></Card.Text>
-                </Card.Body>
-              </Card>
-            </Link>
+          <Col key={restaurant.id} xs={12} sm={6} md={4} lg={3}>
+            <Card className="shadow-sm border-0 position-relative"
+              style={{ height: "350px" }} // Increased height
+            >
+              
+              {/* Heart Icon for Favorite */}
+              <div 
+                className="position-absolute top-0 end-0 p-2"
+                style={{ cursor: "pointer", zIndex: 2 }}
+                onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(restaurant.id);
+                }}
+              >
+                {restaurant.isFavorite ? (
+                  <FaHeart size={22} color="red" />
+                ) : (
+                  <FaRegHeart size={22} color="white" className="opacity-75" />
+                )}
+              </div>
+
+              {/* Restaurant Image */}
+              <Card.Img
+                variant="top"
+                src={restaurant.image}
+                className="rounded-top"
+                style={{ height: "270px", objectFit: "cover" }} // Adjusted height
+              />
+
+              {/* Rating Badge */}
+              <div className="position-absolute bottom-0 end-0 m-2 bg-white text-dark px-2 py-1 rounded-pill fw-bold shadow-sm">
+                ⭐ {restaurant.rating}
+              </div>
+
+              <Card.Body className="text-center">
+                <Card.Title className="fw-bold">{restaurant.name}</Card.Title>
+                <Card.Text className="text-muted small">{restaurant.cuisine}</Card.Text>
+              </Card.Body>
+            </Card>
           </Col>
         ))
       ) : (
@@ -115,5 +202,7 @@ const FeaturedRestaurants = ({ restaurants }) => (
     </Row>
   </>
 );
+
+
 
 export default Dashboard;
