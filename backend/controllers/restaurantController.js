@@ -73,11 +73,36 @@ exports.getRestaurantDetails = async (req, res) => {
 };
 
 // Get Current Restaurant
-exports.getCurrentRestaurant = (req, res) => {
-    if (req.session.restaurant) {
-        res.json({ restaurant: req.session.restaurant });
-    } else {
-        res.status(401).json({ message: "Not logged in to Restaurant" });
+// exports.getCurrentRestaurant = (req, res) => {
+//     console.log("Current Restaurant : current", req.session);
+//     if (req.session.restaurant) {
+//         // consle.log("Current Restaurant : current error", req.session);
+//         res.json({ restaurant: req.session.restaurant });
+//     } else {
+//         res.status(401).json({ message: "Not logged in to Restaurant" });
+//     }
+// };
+exports.getCurrentRestaurant = async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: "Authorization header missing" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+        return res.status(401).json({ message: "Token missing" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
+        const restaurant = await Restaurant.findByPk(decoded.id);
+        if (!restaurant) {
+            return res.status(404).json({ message: "Restaurant not found" });
+        }
+
+        res.status(200).json({ restaurant });
+    } catch (error) {
+        res.status(401).json({ message: "Invalid or expired token", error });
     }
 };
 

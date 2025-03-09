@@ -42,11 +42,9 @@ function App() {
     //     navigate("/restaurant-dashboard");
     // }
     if (user && !restaurant && !isAllowed) {
-        console.log("user", user);
+        console.log("user hech ahe te", user);
         console.log("restaurant", restaurant);
         console.log("isAllowed", isAllowed);
-        
-        
         
         navigate("/dashboard");
     }
@@ -63,8 +61,12 @@ function App() {
                 <Route path="/restaurants/:id" element={<Menu />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/favourite" element={<Favourite />} />
-                <Route path="/restaurant-signup" element={!user ? <RestaurantSignup />: <Dashboard />} />
+                {/* <Route path="/restaurant-signup" element={!user ? <RestaurantSignup />: <Home />} />
+
                 <Route path="/restaurant-login" element={<RestaurantLogin />} />
+                <Route path="/restaurant-dashboard" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} /> */}
+                <Route path="/restaurant-signup" element={!restaurant ? <RestaurantSignup /> : <RestaurantDashboard />} />
+                <Route path="/restaurant-login" element={!restaurant ? <RestaurantLogin /> : <RestaurantDashboard />} />
                 <Route path="/restaurant-dashboard" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
 
             </Routes>

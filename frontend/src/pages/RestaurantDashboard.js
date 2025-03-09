@@ -14,8 +14,8 @@ const RestaurantDashboard = () => {
             try {
                 const restaurantData = await getRestaurantDetails();
                 setRestaurant(restaurantData);
-
-                const ordersData = await getOrdersByRestaurant(restaurantData.id);
+                console.log("restaurantData.........", restaurantData);
+                const ordersData = await getOrdersByRestaurant(restaurantData.restaurant.id);
                 setOrders(ordersData);
 
                 setDishes(restaurantData.dishes || []);
@@ -70,7 +70,13 @@ const RestaurantDashboard = () => {
                             <tr key={order.id}>
                                 <td>{order.id}</td>
                                 <td>{order.customerName}</td>
-                                <td>{order.items}</td>
+                                <td>
+                                    {order.items.map((item, index) => (
+                                        <div key={index}>
+                                            {item.dish_id} - {item.quantity} x ${item.price}
+                                        </div>
+                                    ))}
+                                </td>
                                 <td>{order.status}</td>
                             </tr>
                         ))

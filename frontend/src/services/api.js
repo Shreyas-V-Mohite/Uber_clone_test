@@ -123,10 +123,25 @@ export const loginRestaurant = async (credentials) => {
     return axios.post(`${API_URL}/auth/restaurant-login`, credentials);
 };
 
+// // **Get Logged-in Restaurant Details**
+// export const getRestaurantDetails = async () => {
+//     try {
+//         const response = await axios.get(`${API_URL}/restaurants/me`, { withCredentials: true });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching restaurant details:", error);
+//         throw error;
+//     }
+// };
 // **Get Logged-in Restaurant Details**
 export const getRestaurantDetails = async () => {
     try {
-        const response = await axios.get(`${API_URL}/restaurants/me`, { withCredentials: true });
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        console.log("token after retrival", token);
+        const response = await axios.get(`${API_URL}/restaurants/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching restaurant details:", error);
@@ -135,16 +150,30 @@ export const getRestaurantDetails = async () => {
 };
 
 // **Get Orders for the Logged-in Restaurant**
+// export const getOrdersByRestaurant = async (restaurantId) => {
+//     try {
+//         const response = await axios.get(`${API_URL}/orders/restaurant/${restaurantId}`);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching orders:", error);
+//         return [];
+//     }
+// };
 export const getOrdersByRestaurant = async (restaurantId) => {
     try {
-        const response = await axios.get(`${API_URL}/orders/restaurant/${restaurantId}`);
+        console.log("restaurantId in getOrdersByRest", restaurantId);
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.get(`${API_URL}/orders/restaurant/${restaurantId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        console.log("response in getOrdersByRest", response);
         return response.data;
     } catch (error) {
         console.error("Error fetching orders:", error);
         return [];
     }
 };
-
 // -----------------------------------
 // Restaurant Dasboard
 // **Add a New Dish**

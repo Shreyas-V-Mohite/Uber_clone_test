@@ -19,8 +19,10 @@ const RestaurantLogin = () => {
         try {
             console.log("$handle submit", formData);
             const res = await axios.post("http://localhost:5001/api/auth/restaurant-login", formData, { withCredentials: true });
-            console.log(res.data.restaurant);
-            login(res.data.restaurant); // Store restaurant details in context
+            const { token, restaurant } = res.data;
+            console.log("token on login", token);
+            localStorage.setItem("jwtToken", token); // Store the JWT token in local storage
+            login(restaurant, token, true); // Pass the token and isRestaurant = true to the login function
             navigate("/restaurant-dashboard"); // Redirect to restaurant dashboard
             console.log("login successful");
         } catch (err) {
