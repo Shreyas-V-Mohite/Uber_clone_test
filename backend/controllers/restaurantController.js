@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Restaurant = require("../models/Restaurant");
 
 // Restaurant Signup
@@ -29,18 +30,45 @@ exports.login = async (req, res) => {
     try {
         const restaurant = await Restaurant.findOne({ where: { email } });
         if (!restaurant) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Invalid email or password for Restaurant" });
         }
 
         const isMatch = await bcrypt.compare(password, restaurant.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Invalid email or password for Restaurant" });
         }
 
-        req.session.restaurant = { id: restaurant.id, name: restaurant.name, email: restaurant.email, location: restaurant.location };
-        res.status(200).json({ message: "Login successful", restaurant: req.session.restaurant });
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: restaurant.id, email: restaurant.email, role: "restaurant" },
+            process.env.JWT_SECRET || "supersecretkey",
+            { expiresIn: "1h" } // Token expires in 1 hour
+        );
+
+        res.status(200).json({
+            message: "Restaurant Login successful",
+            token, // Include the token in the response
+            restaurant: {
+                id: restaurant.id,
+                name: restaurant.name,
+                email: restaurant.email,
+                location: restaurant.location
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
+    }
+};
+
+// Get Restaurant by ID
+exports.getRestaurantDetails = async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findByPk(req.params.id);
+        if (!restaurant) return res.status(404).json({ message: "Restaurant not found" });
+
+        res.status(200).json(restaurant);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching restaurant details", error });
     }
 };
 
@@ -49,7 +77,7 @@ exports.getCurrentRestaurant = (req, res) => {
     if (req.session.restaurant) {
         res.json({ restaurant: req.session.restaurant });
     } else {
-        res.status(401).json({ message: "Not logged in" });
+        res.status(401).json({ message: "Not logged in to Restaurant" });
     }
 };
 
@@ -57,8 +85,8 @@ exports.getCurrentRestaurant = (req, res) => {
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({ message: "Error logging out" });
+            return res.status(500).json({ message: "Error logging out of Restaurant" });
         }
-        res.status(200).json({ message: "Logout successful" });
+        res.status(200).json({ message: "Logout successful from Restaurant" });
     });
 };

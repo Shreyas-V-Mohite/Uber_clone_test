@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const sequelize = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
-const restaurantRoutes = require("./routes/restaurantRoutes");
 const dishRoutes = require("./routes/dishRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 
@@ -29,7 +28,7 @@ app.use(
 
 // ✅ Ensure routes are registered BEFORE syncing the database
 app.use("/api/auth", authRoutes);
-app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/restaurants", authRoutes);
 app.use("/api/dishes", dishRoutes);
 app.use("/api/orders", orderRoutes);
 

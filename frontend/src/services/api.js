@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
-// User Authentication
+// Customer Authentication
 export const signup = async (userData) => {
     return axios.post(`${API_URL}/auth/signup`, userData);
 };
@@ -11,28 +11,25 @@ export const signup = async (userData) => {
 export const login = async (credentials) => {
     return axios.post(`${API_URL}/auth/login`, credentials);
 };
-//is favourite
+
+// **Toggle Favorite Restaurant**
 export const toggleFavoriteRestaurant = async (restaurantId, isFavorite) => {
-  try {
-      const response = await axios.post(`${API_URL}/favorites/toggle`, {
-          restaurantId,
-          isFavorite
-      });
-      return response.data;
-  } catch (error) {
-      console.warn(`Backend not available for favorite toggle, using local state.`);
-      return { success: true }; // Simulate successful API response
-  }
+    try {
+        const response = await axios.post(`${API_URL}/favorites/toggle`, { restaurantId, isFavorite });
+        return response.data;
+    } catch (error) {
+        console.warn("Backend not available for favorite toggle, using local state.");
+        return { success: true };
+    }
 };
 
-
-// Fetch Restaurants (Use Placeholder Data Until Backend is Ready)
+// **Fetch Restaurants**
 export const getRestaurants = async () => {
     try {
         const response = await axios.get(`${API_URL}/restaurants`);
         return response.data;
     } catch (error) {
-        console.warn("Backend not available, using placeholder data.");
+        console.warn("@Backend not available, using placeholder data.");
         return [
             { id: 1, name: "Mcdonalds", cuisine: "Fast Food", rating: 4.5, image: "/images/burger.jpg" },
             { id: 2, name: "Annapoorna", cuisine: "Indian Cuisine", rating: 3.8, image: "/images/biryani.jpg" },
@@ -42,13 +39,45 @@ export const getRestaurants = async () => {
     }
 };
 
-// Fetch Restaurant Details & Menu (Use Placeholder Data Until Backend is Ready)
-export const getRestaurantDetails = async (id) => {
+
+// ✅ Get all restaurants (Make sure to include authentication headers) gpt version
+// export const getRestaurants = async () => {
+//     try {
+//         const token = localStorage.getItem("token");  // Retrieve JWT from local storage
+//         const response = await axios.get(`${API_URL}/restaurants`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//             withCredentials: true, // Important for session cookies
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching restaurants:", error);
+//         throw error;
+//     }
+// };
+
+// ✅ Get logged-in restaurant details gpt version
+// export const getRestaurantDetails = async () => {
+//     try {
+//         const token = localStorage.getItem("token");
+//         const response = await axios.get(`${API_URL}/restaurants/me`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//             withCredentials: true,
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching restaurant details:", error);
+//         throw error;
+//     }
+// };
+
+
+// **Fetch Restaurant Details (Customer Side)**
+export const getRestaurantInfo = async (id) => {
     try {
         const response = await axios.get(`${API_URL}/restaurants/${id}`);
         return response.data;
     } catch (error) {
-        console.warn(`Backend not available for restaurant ${id}, using placeholder data.`);
+        console.warn(`#Backend not available for restaurant ${id}, using placeholder data.`);
         return {
             id,
             name: `Restaurant ${id}`,
@@ -65,23 +94,75 @@ export const getRestaurantDetails = async (id) => {
     }
 };
 
+// **Place an Order**
 export const placeOrder = async (orderData) => {
     try {
-      console.log("Placing order:", orderData); // Debugging
-  
-      // Simulating API request delay
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() < 0.9) {
-            resolve("Order placed successfully!");
-          } else {
-            reject("Order failed! Try again.");
-          }
-        }, 1000);
-      });
+        console.log("Placing order:", orderData);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (Math.random() < 0.9) {
+                    resolve("Order placed successfully!");
+                } else {
+                    reject("Order failed! Try again.");
+                }
+            }, 1000);
+        });
     } catch (error) {
-      console.error("Error placing order:", error);
-      throw error;
+        console.error("Error placing order:", error);
+        throw error;
     }
-  };
-  
+};
+
+//-----------------------------------
+// Restaurant Authentication
+export const signupRestaurant = async (restaurantData) => {
+    return axios.post(`${API_URL}/auth/restaurant-signup`, restaurantData);
+};
+
+export const loginRestaurant = async (credentials) => {
+    return axios.post(`${API_URL}/auth/restaurant-login`, credentials);
+};
+
+// **Get Logged-in Restaurant Details**
+export const getRestaurantDetails = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/restaurants/me`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+        throw error;
+    }
+};
+
+// **Get Orders for the Logged-in Restaurant**
+export const getOrdersByRestaurant = async (restaurantId) => {
+    try {
+        const response = await axios.get(`${API_URL}/orders/restaurant/${restaurantId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        return [];
+    }
+};
+
+// -----------------------------------
+// Restaurant Dasboard
+// **Add a New Dish**
+export const addDish = async (dishData) => {
+    try {
+        const response = await axios.post(`${API_URL}/dishes`, dishData);
+        return response.data;
+    } catch (error) {
+        console.error("Error adding dish:", error);
+        throw error;
+    }
+};
+
+// **Delete a Dish**
+export const deleteDish = async (dishId) => {
+    try {
+        await axios.delete(`${API_URL}/dishes/${dishId}`);
+    } catch (error) {
+        console.error("Error deleting dish:", error);
+    }
+};

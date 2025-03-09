@@ -15,6 +15,9 @@ router.get("/customer", verifyToken, orderController.getCustomerOrders);
 router.get("/restaurant/:restaurant_id", verifyToken, orderController.getRestaurantOrders);
 
 // 📌 Update Order Status (Restaurant Owner)
-router.put("/:order_id/status", verifyToken, orderController.updateOrderStatus);
+router.put("/status/:order_id", verifyToken, orderController.updateOrderStatus);
+
+// 📌 Cancel Order (Customer)
+router.put("/cancel/:order_id", verifyToken, orderController.cancelOrder);
 
 module.exports = router;

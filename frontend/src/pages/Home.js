@@ -45,7 +45,7 @@ const Home = () => {
                                 </Link>
                             </li>
                             <li className="mb-2">
-                                <Link to="#" className="text-light d-flex align-items-center">
+                                <Link to="/restaurant-signup" className="text-light d-flex align-items-center">
                                     <FaUtensils className="me-2" /> Add your restaurant
                                 </Link>
                             </li>

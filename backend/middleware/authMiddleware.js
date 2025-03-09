@@ -8,22 +8,6 @@ exports.protectRoute = (req, res, next) => {
     next();
 };
 
-// // Middleware to verify JWT token
-// exports.verifyToken = (req, res, next) => {
-//     const token = req.header('Authorization');
-//     if (!token) return res.status(401).json({ message: 'Access denied. No token provided.' });
-
-//     try {
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//         req.user = decoded;
-//         next();
-//     } catch (error) {
-//         res.status(400).json({ message: 'Invalid token.' });
-//     }
-// };
-
-// const jwt = require("jsonwebtoken");
-
 // Middleware to verify JWT token
 exports.verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization; // Check for 'Authorization' header
@@ -32,12 +16,15 @@ exports.verifyToken = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1]; // Extract token without "Bearer"
+    console.log("Token received:", token); // Debugging line
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Ensure JWT_SECRET matches
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey"); // Ensure JWT_SECRET matches
+        console.log("Token decoded:", decoded); // Debugging line
         req.user = decoded; // Store user details in request for further use
         next();
     } catch (error) {
+        console.error("Token verification failed:", error); // Debugging line
         return res.status(400).json({ message: "Invalid token." });
     }
 };

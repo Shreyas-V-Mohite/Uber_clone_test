@@ -1,0 +1,11 @@
+1. get restaurants list
+
+2. persist token after loggin in while making further api calls
+
+3. Restaurant menu : GET api/dishes/
+get restaurant specific dishes : GET api/dishes/rest_ID
+
+
+
+
+2. search : 

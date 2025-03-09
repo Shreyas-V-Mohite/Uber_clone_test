@@ -7,6 +7,10 @@ const Customer = sequelize.define("Customer", {
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
+    // location: { type: DataTypes.STRING, allowNull: false },
+    // contact_info: { type: DataTypes.STRING },
+    // image: { type: DataTypes.STRING },
+
 }, { timestamps: true });
 
 module.exports = Customer;

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 
-const Login = () => {
+const RestaurantLogin = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [message, setMessage] = useState("");
     const { login } = useContext(AuthContext);
@@ -17,12 +17,12 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5001/api/auth/login", formData);
-            const { token, user } = res.data;
-            console.log("token on login", token);
-            localStorage.setItem("jwtToken", token); // Store the JWT token in local storage
-            login(user, token); // Pass the token to the login function
-            navigate("/dashboard");
+            console.log("$handle submit", formData);
+            const res = await axios.post("http://localhost:5001/api/auth/restaurant-login", formData, { withCredentials: true });
+            console.log(res.data.restaurant);
+            login(res.data.restaurant); // Store restaurant details in context
+            navigate("/restaurant-dashboard"); // Redirect to restaurant dashboard
+            console.log("login successful");
         } catch (err) {
             setMessage(err.response?.data?.message || "Error logging in");
         }
@@ -40,14 +40,14 @@ const Login = () => {
             <Row className="w-100 justify-content-center">
                 <Col md={4}>
                     <Card className="p-4 shadow-lg" style={{ background: "rgba(0, 0, 0, 0.8)", borderRadius: "10px" }}>
-                        <h2 className="text-center text-light mb-4">Login</h2>
+                        <h2 className="text-center text-light mb-4">Restaurant Login</h2>
                         {message && <p className="text-danger text-center">{message}</p>}
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
                                 <Form.Control
                                     type="email"
                                     name="email"
-                                    placeholder="Email"
+                                    placeholder="Restaurant Email"
                                     onChange={handleChange}
                                     required
                                     className="form-control"
@@ -69,7 +69,7 @@ const Login = () => {
                         </Form>
                         <div className="text-center mt-3">
                             <p className="text-light">
-                                Don't have an account? <a href="/signup" className="text-warning">Sign Up</a>
+                                Don't have an account? <a href="/restaurant-signup" className="text-warning">Sign Up</a>
                             </p>
                         </div>
                     </Card>
@@ -79,4 +79,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default RestaurantLogin;

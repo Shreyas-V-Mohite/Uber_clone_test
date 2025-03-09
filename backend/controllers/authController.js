@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const Customer = require("../models/Customer");
 const Restaurant = require("../models/Restaurant");
 
-// 🔹 **Signup Controller** (No major change needed)
+// 🔹 **Signup Controller**
 exports.signup = async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
     }
 };
 
-// 🔹 **Login Controller (Now Uses JWT)**
+// 🔹 **Login Controller Uses JWT**
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -30,9 +30,9 @@ exports.login = async (req, res) => {
         // 🔹 Check if user is a customer
         let user = await Customer.findOne({ where: { email } });
         let role = "customer";
-
         // 🔹 If not found, check if it's a restaurant
         if (!user) {
+            console.log("@User not found in customers");
             user = await Restaurant.findOne({ where: { email } });
             role = "restaurant";
         }
@@ -70,7 +70,7 @@ exports.login = async (req, res) => {
     }
 };
 
-// 🔹 **Get Current User (Now Extracts Data from JWT)**
+// 🔹 **Get Current User Extracts Data from JWT**
 exports.getCurrentUser = (req, res) => {
     try {
         const authHeader = req.header("Authorization");
@@ -87,7 +87,7 @@ exports.getCurrentUser = (req, res) => {
     }
 };
 
-// 🔹 **Logout (JWT is Stateless, So We Just Clear Frontend Storage)**
+// 🔹 **Logout JWT is Stateless, So We Just Clear Frontend Storage**
 exports.logout = (req, res) => {
     res.status(200).json({ message: "Logout successful (Clear token from frontend storage)" });
 };
