@@ -4,7 +4,7 @@ const session = require("express-session");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const sequelize = require("./config/db");
-
+const restaurantRoutes = require("./routes/restaurantRoutes");
 const authRoutes = require("./routes/authRoutes");
 const dishRoutes = require("./routes/dishRoutes");
 const orderRoutes = require("./routes/orderRoutes");
@@ -28,7 +28,7 @@ app.use(
 
 // ✅ Ensure routes are registered BEFORE syncing the database
 app.use("/api/auth", authRoutes);
-app.use("/api/restaurants", authRoutes);
+app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/dishes", dishRoutes);
 app.use("/api/orders", orderRoutes);
 

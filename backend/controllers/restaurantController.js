@@ -81,6 +81,16 @@ exports.getCurrentRestaurant = (req, res) => {
     }
 };
 
+// Get All Restaurants
+exports.getAllRestaurants = async (req, res) => {
+    try {
+        const restaurants = await Restaurant.findAll();
+        res.status(200).json(restaurants);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching restaurants", error });
+    }
+};
+
 // Logout Restaurant
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
