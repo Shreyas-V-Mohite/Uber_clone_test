@@ -33,7 +33,7 @@ app.use("/api/dishes", dishRoutes);
 app.use("/api/orders", orderRoutes);
 
 // Sync database models
-sequelize.sync({ force: true })
+sequelize.sync({ alter: true })
     .then(() => console.log("Database & tables synchronized"))
     .catch(err => console.error("Error syncing database:", err));
 

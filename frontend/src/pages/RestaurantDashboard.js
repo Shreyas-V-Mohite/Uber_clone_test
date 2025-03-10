@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button, Table, Form } from "react-bootstrap";
-import { getRestaurantDetails, getOrdersByRestaurant, addDish, deleteDish, updateOrderStatus } from "../services/api";
+import { getRestaurantDetails, getOrdersByRestaurant, getDishesByRestaurant, addDish, deleteDish, updateOrderStatus } from "../services/api";
 
 const RestaurantDashboard = () => {
     const [restaurant, setRestaurant] = useState(null);
@@ -12,13 +12,19 @@ const RestaurantDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const restaurantData = await getRestaurantDetails();
+                const storedRestaurant = JSON.parse(localStorage.getItem("restaurant"));
+                if (!storedRestaurant || !storedRestaurant.id) {
+                    throw new Error("Restaurant ID not found in local storage");
+                }
+                const restaurantData = await getRestaurantDetails(storedRestaurant.id);
                 setRestaurant(restaurantData);
                 console.log("restaurantData.........", restaurantData);
-                const ordersData = await getOrdersByRestaurant(restaurantData.restaurant.id);
+                const ordersData = await getOrdersByRestaurant(restaurantData.id);
+                console.log("ordersData.........", ordersData);
                 setOrders(ordersData);
 
-                setDishes(restaurantData.dishes || []);
+                const dishesData = await getDishesByRestaurant(restaurantData.id);
+                setDishes(dishesData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -41,21 +47,6 @@ const RestaurantDashboard = () => {
     };
 
     // Handle updating order status
-    // const handleUpdateOrderStatus = async (orderId, status) => {
-    //     console.log("orderId in handleUpdateOrderStatus", orderId);
-    //     console.log("status in handleUpdateOrderStatus", status);
-    //     try {
-    //         const updatedOrder = await updateOrderStatus(orderId, status);
-    //         // setOrders(orders.map(order => order.id === orderId ? updatedOrder : order));
-    //         setOrders(orders.map(order => order.id === orderId ? { ...order, status: updatedOrder.status } : order));
-            
-    //         // await 
-    //         console.log("updatedOrder in handleUpdateOrderStatus he navin ahe", updatedOrder);
-    //     } catch (error) {
-    //         console.error("Error updating order status:", error);
-    //     }
-    // };
-
     const handleUpdateOrderStatus = async (orderId, status) => {
         console.log("orderId in handleUpdateOrderStatus", orderId);
         console.log("status in handleUpdateOrderStatus", status);
@@ -76,7 +67,6 @@ const RestaurantDashboard = () => {
             console.error("Error updating order status:", error);
         }
     };
-    
 
     return (
         <Container className="mt-4">
@@ -99,7 +89,6 @@ const RestaurantDashboard = () => {
                         <th>Order ID</th>
                         <th>Customer</th>
                         <th>Items</th>
-                        {/* <th>Status</th> */}
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -108,7 +97,7 @@ const RestaurantDashboard = () => {
                         orders.map((order) => (
                             <tr key={order.id}>
                                 <td>{order.id}</td>
-                                <td>{order.customerName}</td>
+                                <td>{order.Customer.name}</td> {/* Updated to display customer name */}
                                 <td>
                                     {order.items && order.items.map((item, index) => (
                                         <div key={index}>
@@ -116,7 +105,6 @@ const RestaurantDashboard = () => {
                                         </div>
                                     ))}
                                 </td>
-                                {/* <td>{order.status}</td> */}
                                 <td>
                                     <Form.Select
                                         value={order.status}

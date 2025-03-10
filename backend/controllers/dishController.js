@@ -31,6 +31,17 @@ const getDishesByRestaurant = async (req, res) => {
     }
 };
 
+const getDishById = async (req, res) => {
+    try {
+        const { dish_id } = req.params;
+        const dish = await Dish.findByPk(dish_id);
+        if (!dish) return res.status(404).json({ message: "Dish not found" });
+        res.status(200).json(dish);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching dish", error });
+    }
+};
+
 const deleteDish = async (req, res) => {
     try {
         const { dish_id } = req.params;
@@ -39,7 +50,7 @@ const deleteDish = async (req, res) => {
         const dish = await Dish.findOne({ where: { id: dish_id } });
         if (!dish) return res.status(404).json({ message: "Dish not found" });
 
-        // Check if the restaurant_id in the token matches the restaurant_id of the dish
+// Check if the restaurant_id in the token matches the restaurant_id of the dish
         if (req.user.role !== "restaurant" || req.user.id !== dish.restaurant_id) {
             return res.status(403).json({ message: "Unauthorized to delete this dish" });
         }
@@ -56,6 +67,7 @@ const deleteDish = async (req, res) => {
 module.exports = {
     addDish,
     getDishesByRestaurant,
+    getDishById, // Export the new function
     deleteDish,
 };
 

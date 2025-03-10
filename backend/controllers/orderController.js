@@ -11,6 +11,7 @@ exports.placeOrder = async (req, res) => {
 
         // Validate Data
         if (!restaurant_id || !items || !total_price) {
+            console.log("Missing required fields", req.body);
             return res.status(400).json({ message: "Missing required fields" });
         }
 

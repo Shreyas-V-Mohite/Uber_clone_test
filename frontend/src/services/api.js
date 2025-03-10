@@ -97,18 +97,44 @@ export const getRestaurantInfo = async (id) => {
 // **Place an Order**
 export const placeOrder = async (orderData) => {
     try {
-        console.log("Placing order:", orderData);
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (Math.random() < 0.9) {
-                    resolve("Order placed successfully!");
-                } else {
-                    reject("Order failed! Try again.");
-                }
-            }, 1000);
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.post(`${API_URL}/orders`, orderData, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
         });
+        return response.data;
     } catch (error) {
         console.error("Error placing order:", error);
+        throw error;
+    }
+};
+
+// **Get Customer Orders**
+export const getCustomerOrders = async () => {
+    try {
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.get(`${API_URL}/orders/customer`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching customer orders:", error);
+        throw error;
+    }
+};
+
+// **Cancel Order**
+export const cancelOrder = async (orderId) => {
+    try {
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.put(`${API_URL}/orders/cancel/${orderId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error canceling order:", error);
         throw error;
     }
 };
@@ -136,6 +162,7 @@ export const loginRestaurant = async (credentials) => {
 // **Get Logged-in Restaurant Details**
 export const getRestaurantDetails = async (id) => {
     try {
+        console.log("id in getRestaurantDetails in  api.js", id);
         const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
         console.log("token after retrieval", token);
         const response = await axios.get(`${API_URL}/restaurants/${id}`, {
@@ -206,10 +233,34 @@ export const updateOrderStatus = async (orderId, status) => {
         throw error;
     }
 };
+// // **Add a New Dish**
+// export const addDish = async (dishData) => {
+//     try {
+//         const response = await axios.post(`${API_URL}/dishes`, dishData);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error adding dish:", error);
+//         throw error;
+//     }
+// };
+
+// // **Delete a Dish**
+// export const deleteDish = async (dishId) => {
+//     try {
+//         await axios.delete(`${API_URL}/dishes/${dishId}`);
+//     } catch (error) {
+//         console.error("Error deleting dish:", error);
+//     }
+// };
+
 // **Add a New Dish**
 export const addDish = async (dishData) => {
     try {
-        const response = await axios.post(`${API_URL}/dishes`, dishData);
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.post(`${API_URL}/dishes`, dishData, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error("Error adding dish:", error);
@@ -220,8 +271,43 @@ export const addDish = async (dishData) => {
 // **Delete a Dish**
 export const deleteDish = async (dishId) => {
     try {
-        await axios.delete(`${API_URL}/dishes/${dishId}`);
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        await axios.delete(`${API_URL}/dishes/${dishId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
     } catch (error) {
         console.error("Error deleting dish:", error);
+    }
+};
+
+// **Get Dishes by Restaurant**
+export const getDishesByRestaurant = async (restaurantId) => {
+    try {
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.get(`${API_URL}/dishes/${restaurantId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching dishes:", error);
+        throw error;
+    }
+};
+
+// **Get Dish by ID**
+export const getDishById = async (dishId) => {
+    console.log("dishId in getDishById", dishId);
+    try {
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.get(`${API_URL}/dishes/dish/${dishId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching dish details:", error);
+        throw error;
     }
 };
