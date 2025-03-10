@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Restaurant = require("../models/Restaurant");
+const { uploadToMinio } = require("../utils/minioClient");
+const multer = require('multer');
+const upload = multer();
 
 // Restaurant Signup
 exports.signup = async (req, res) => {
@@ -73,15 +76,6 @@ exports.getRestaurantDetails = async (req, res) => {
 };
 
 // Get Current Restaurant
-// exports.getCurrentRestaurant = (req, res) => {
-//     console.log("Current Restaurant : current", req.session);
-//     if (req.session.restaurant) {
-//         // consle.log("Current Restaurant : current error", req.session);
-//         res.json({ restaurant: req.session.restaurant });
-//     } else {
-//         res.status(401).json({ message: "Not logged in to Restaurant" });
-//     }
-// };
 exports.getCurrentRestaurant = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -124,4 +118,27 @@ exports.logout = (req, res) => {
         }
         res.status(200).json({ message: "Logout successful from Restaurant" });
     });
+};
+
+// Update Restaurant
+exports.updateRestaurant = async (req, res) => {
+    try {
+        const { restaurant_id } = req.params;
+        const { name, email, password, location, description, contact_info, timings } = req.body;
+        const files = req.files;
+
+        const restaurant = await Restaurant.findByPk(restaurant_id);
+        if (!restaurant) return res.status(404).json({ message: "Restaurant not found" });
+
+        let imageKeys = restaurant.images ? restaurant.images.split(',') : [];
+        if (files && files.length > 0) {
+            const newImageKeys = await Promise.all(files.map(file => uploadToMinio(file)));
+            imageKeys = imageKeys.concat(newImageKeys);
+        }
+
+        await restaurant.update({ name, email, password, location, description, contact_info, timings, images: imageKeys.join(',') });
+        res.status(200).json({ message: "Restaurant updated successfully", restaurant });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating restaurant", error });
+    }
 };

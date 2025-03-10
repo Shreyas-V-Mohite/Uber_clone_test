@@ -1,4 +1,7 @@
 const Dish = require("../models/Dish");
+const { uploadToMinio } = require("../utils/minioClient");
+const multer = require('multer');
+const upload = multer();
 
 console.log("Dish Controller Loaded"); // Debugging line
 console.log("Dish Model:", Dish); // Check model import
@@ -6,14 +9,24 @@ console.log("Dish Model:", Dish); // Check model import
 const addDish = async (req, res) => {
     console.log("in addDish");
     try {
-        const { name, description, price, category, image, restaurant_id } = req.body;
-
+        const body = JSON.parse(req.body.data);
+        console.log("body json", body);
+        const { name, description, price, category, restaurant_id } = body;
+        const files = req.files;
+        console.log("user role", req.body, req.user.role);
+        console.log("body", req.user.id, restaurant_id);
         // Check if the restaurant_id in the token matches the restaurant_id in the request body
-        if (req.user.role !== "restaurant" || req.user.id !== restaurant_id) {
+        if (req.user.role != "restaurant" || req.user.id != restaurant_id) {
             return res.status(403).json({ message: "Unauthorized to add dish to this restaurant" });
         }
 
-        const dish = await Dish.create({ name, description, price, category, image, restaurant_id });
+        let imageKeys = [];
+        if (files && files.length > 0) {
+            imageKeys = await Promise.all(files.map(file => uploadToMinio(file)));
+        }
+        // images = imageKeys.join(',')
+
+        const dish = await Dish.create({ name, description, price, category, restaurant_id, images: imageKeys.join(',')  });
         res.status(201).json({ message: "Dish added successfully", dish });
     } catch (error) {
         console.error("Error in addDish:", error); // Debugging
@@ -63,11 +76,39 @@ const deleteDish = async (req, res) => {
     }
 };
 
+const updateDish = async (req, res) => {
+    try {
+        const { dish_id } = req.params;
+        const { name, description, price, category } = req.body;
+        const files = req.files;
+
+        const dish = await Dish.findByPk(dish_id);
+        if (!dish) return res.status(404).json({ message: "Dish not found" });
+
+        // Check if the restaurant_id in the token matches the restaurant_id of the dish
+        if (req.user.role !== "restaurant" || req.user.id !== dish.restaurant_id) {
+            return res.status(403).json({ message: "Unauthorized to update this dish" });
+        }
+
+        let imageKeys = dish.images ? dish.images.split(',') : [];
+        if (files && files.length > 0) {
+            const newImageKeys = await Promise.all(files.map(file => uploadToMinio(file)));
+            imageKeys = imageKeys.concat(newImageKeys);
+        }
+
+        await dish.update({ name, description, price, category, images: imageKeys.join(',') });
+        res.status(200).json({ message: "Dish updated successfully", dish });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating dish", error });
+    }
+};
+
 // Correct Export
 module.exports = {
     addDish,
+    updateDish,
     getDishesByRestaurant,
-    getDishById, // Export the new function
+    getDishById,
     deleteDish,
 };
 

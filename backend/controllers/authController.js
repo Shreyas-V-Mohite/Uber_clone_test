@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
 };
 
 // 🔹 **Get Current User Extracts Data from JWT**
-exports.getCurrentUser = (req, res) => {
+exports.getCurrentUser = async (req, res) => {
     try {
         const authHeader = req.header("Authorization");
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -81,7 +81,23 @@ exports.getCurrentUser = (req, res) => {
         const token = authHeader.split(" ")[1]; // Extract token
         const decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
 
-        res.status(200).json({ user: decoded });
+        // Fetch the user from the database
+        let user;
+        if (decoded.role === "customer") {
+            user = await Customer.findByPk(decoded.id, {
+                attributes: { exclude: ["password"] } // Exclude the password field
+            });
+        } else if (decoded.role === "restaurant") {
+            user = await Restaurant.findByPk(decoded.id, {
+                attributes: { exclude: ["password"] } // Exclude the password field
+            });
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ user });
     } catch (error) {
         res.status(401).json({ message: "Invalid token" });
     }

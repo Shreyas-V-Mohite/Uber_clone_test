@@ -18,6 +18,7 @@ import RestaurantLogin from "./pages/RestaurantLogin";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import RestaurantDetails from "./pages/RestaurantDetails";
 import CustomerOrders from "./pages/CustomerOrders";
+import RestaurantProfile from "./pages/RestaurantProfile";
 
 function LandingPage() {
     return (
@@ -62,6 +63,8 @@ function App() {
                 <Route path="/favourite" element={<Favourite />} />
                 <Route path="/restaurant-login" element={<RestaurantLogin />} /> 
                 <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} /> 
+                <Route path="/restaurant-profile" element={<RestaurantProfile />} />
+
                 <Route path="/restaurant-signup" element={!restaurant ? <RestaurantSignup /> : <RestaurantDashboard />} />
                 <Route path="/customer-profile" element={<Profile />} />
                 <Route path="/orders" element={<ProtectedRoute><CustomerOrders /></ProtectedRoute>} /> {/* Protected Route */}

@@ -9,7 +9,8 @@ const Restaurant = sequelize.define("Restaurant", {
     location: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT },
     contact_info: { type: DataTypes.STRING },
-    timings: { type: DataTypes.STRING }
+    timings: { type: DataTypes.STRING },
+    images: { type: DataTypes.STRING, allowNull: true },
 }, { timestamps: true });
 
 module.exports = Restaurant;

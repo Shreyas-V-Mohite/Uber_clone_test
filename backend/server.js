@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const dishRoutes = require("./routes/dishRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
+const customerRoutes = require("./routes/customerRoutes");
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/dishes", dishRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
+app.use("/api/customers", customerRoutes);
 
 // Sync database models
 sequelize.sync({ alter: true })

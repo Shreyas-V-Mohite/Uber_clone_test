@@ -306,17 +306,21 @@ export const updateOrderStatus = async (orderId, status) => {
 // };
 
 // **Add a New Dish**
-export const addDish = async (dishData) => {
+export const addDish = async (formData) => {
     try {
-        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
-        const response = await axios.post(`${API_URL}/dishes`, dishData, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
+        const token = localStorage.getItem("jwtToken");
+        console.log("formData in addDish", formData.get("data"));
+        console.log("formData in addDish", formData.get("images"));
+        const response = await axios.post("http://localhost:5001/api/dishes", formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            },
         });
         return response.data;
     } catch (error) {
         console.error("Error adding dish:", error);
-        throw error;
+        // throw error;
     }
 };
 

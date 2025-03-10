@@ -1,4 +1,3 @@
-// filepath: /home/shreyas/Documents/sem2/Distributed_systems/labs/Labs/lab1/backend/models/Dish.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 const Restaurant = require("./Restaurant");
@@ -15,7 +14,8 @@ const Dish = sequelize.define("Dish", {
         allowNull: false, 
         references: { model: Restaurant, key: "id" },
         onDelete: "CASCADE"
-    }
+    },
+    images: { type: DataTypes.STRING, allowNull: true },
 }, { timestamps: false });
 
 Restaurant.hasMany(Dish, { foreignKey: "restaurant_id", onDelete: "CASCADE" });

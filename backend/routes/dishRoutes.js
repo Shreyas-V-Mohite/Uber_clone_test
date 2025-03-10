@@ -1,14 +1,15 @@
 const express = require("express");
-const dishController = require("../controllers/dishController"); // ✅ Import the entire controller object
+const dishController = require("../controllers/dishController");
 const { verifyToken } = require("../middleware/authMiddleware");
+const multer = require('multer');
+const upload = multer();
 
 const router = express.Router();
 
-console.log("Dish Controller in Routes:", Object.keys(dishController)); // ✅ Debugging
-
-router.post("/", verifyToken, dishController.addDish); // ✅ Access `addDish` correctly
+router.post("/", verifyToken, upload.array('images'), dishController.addDish);
+router.put("/dish/:dish_id", verifyToken, upload.array('images'), dishController.updateDish);
 router.get("/:restaurant_id", dishController.getDishesByRestaurant);
-router.get("/dish/:dish_id", dishController.getDishById); // Add route to get dish by ID
+router.get("/dish/:dish_id", dishController.getDishById);
 router.delete("/:dish_id", verifyToken, dishController.deleteDish);
 
 module.exports = router;
