@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }) => {
                 .then((res) => {
                     console.log("User from authcontext 1", res.data.user);
                     setUser(res.data.user);
-                    console.log("User from authcontext 2", user);
                 })
                 .catch(() => setUser(null));
 

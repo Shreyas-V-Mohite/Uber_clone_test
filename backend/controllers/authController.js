@@ -33,8 +33,8 @@ exports.login = async (req, res) => {
         // 🔹 If not found, check if it's a restaurant
         if (!user) {
             console.log("@User not found in customers");
-            user = await Restaurant.findOne({ where: { email } });
-            role = "restaurant";
+            // user = await Restaurant.findOne({ where: { email } });
+            // role = "restaurant";
         }
 
         if (!user) {

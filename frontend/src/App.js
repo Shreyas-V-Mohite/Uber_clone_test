@@ -62,13 +62,13 @@ function App() {
                 <Route path="/restaurants/:id" element={<Menu />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/favourite" element={<Favourite />} />
-                {/* <Route path="/restaurant-signup" element={!user ? <RestaurantSignup />: <Home />} />
+                {/* <Route path="/restaurant-signup" element={!user ? <RestaurantSignup />: <Home />} />*/}
 
-                <Route path="/restaurant-login" element={<RestaurantLogin />} />
-                <Route path="/restaurant-dashboard" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} /> */}
+                <Route path="/restaurant-login" element={<RestaurantLogin />} /> 
+                <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} /> 
                 <Route path="/restaurant-signup" element={!restaurant ? <RestaurantSignup /> : <RestaurantDashboard />} />
-                <Route path="/restaurant-login" element={!restaurant ? <RestaurantLogin /> : <RestaurantDashboard />} />
-                <Route path="/restaurant-dashboard" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
+                {/* <Route path="/restaurant-login" element={!restaurant ? <RestaurantLogin /> : <RestaurantDashboard />} /> */}
+                
 
                 <Route path="/customer-profile" element={<Profile />} />
             </Routes>

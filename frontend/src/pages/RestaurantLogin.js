@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -9,6 +9,13 @@ const RestaurantLogin = () => {
     const [message, setMessage] = useState("");
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { user, restaurant } = useContext(AuthContext);
+
+    useEffect(() => {
+        if (restaurant) {
+            navigate('/restaurant-dashboard');
+        }
+    }, [restaurant, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,11 +23,14 @@ const RestaurantLogin = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("restaurant are", restaurant);
+        
         try {
             console.log("$handle submit", formData);
             const res = await axios.post("http://localhost:5001/api/auth/restaurant-login", formData, { withCredentials: true });
             const { token, restaurant } = res.data;
             console.log("token on login", token);
+            console.log("restaurant data on login", restaurant);
             localStorage.setItem("jwtToken", token); // Store the JWT token in local storage
             login(restaurant, token, true); // Pass the token and isRestaurant = true to the login function
             navigate("/restaurant-dashboard"); // Redirect to restaurant dashboard
@@ -29,8 +39,8 @@ const RestaurantLogin = () => {
             setMessage(err.response?.data?.message || "Error logging in");
         }
     };
-
-    return (
+    
+    return (               
         <Container fluid className="d-flex align-items-center justify-content-center vh-100"
             style={{
                 backgroundImage: "url('/images/food2.jpg')", // Match homepage background
@@ -58,7 +68,7 @@ const RestaurantLogin = () => {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Control
-                                    type="password"
+                                    type="password" 
                                     name="password"
                                     placeholder="Password"
                                     onChange={handleChange}
@@ -77,7 +87,7 @@ const RestaurantLogin = () => {
                     </Card>
                 </Col>
             </Row>
-        </Container>
+        </Container>        
     );
 };
 
