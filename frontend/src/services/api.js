@@ -12,32 +12,83 @@ export const login = async (credentials) => {
     return axios.post(`${API_URL}/auth/login`, credentials);
 };
 
-// **Toggle Favorite Restaurant**
+// ✅ Toggle Favorite
 export const toggleFavoriteRestaurant = async (restaurantId, isFavorite) => {
     try {
-        const response = await axios.post(`${API_URL}/favorites/toggle`, { restaurantId, isFavorite });
+        const token = localStorage.getItem("jwtToken"); // ✅ Retrieve JWT from local storage
+        if (!token) throw new Error("JWT token missing");
+
+        const response = await axios.post(
+            `${API_URL}/favorites/toggle`,
+            { restaurantId, isFavorite },
+            {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true, // ✅ Ensure cookies are included
+            }
+        );
+
         return response.data;
     } catch (error) {
-        console.warn("Backend not available for favorite toggle, using local state.");
-        return { success: true };
+        console.error("Failed to toggle favorite:", error);
+        throw error;
     }
 };
 
-// **Fetch Restaurants**
-export const getRestaurants = async () => {
+
+export const getFavoriteRestaurants = async () => {
     try {
-        const response = await axios.get(`${API_URL}/restaurants`);
+        const token = localStorage.getItem("jwtToken"); // ✅ Retrieve JWT from localStorage
+        console.log("Token being used:", token);
+        
+        if (!token) throw new Error("JWT token missing");
+
+        // ✅ Pass token in the headers
+        const response = await axios.get(`${API_URL}/favorites`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true
+        });
+
         return response.data;
     } catch (error) {
-        console.warn("@Backend not available, using placeholder data.");
-        return [
-            { id: 1, name: "Mcdonalds", cuisine: "Fast Food", rating: 4.5, image: "/images/burger.jpg" },
-            { id: 2, name: "Annapoorna", cuisine: "Indian Cuisine", rating: 3.8, image: "/images/biryani.jpg" },
-            { id: 3, name: "Urban Momo", cuisine: "Nepali Cuisine", rating: 4.2, image: "/images/momos.jpg" },
-            { id: 4, name: "Chipotle Mexican Grill", cuisine: "Mexican, Fast Food", rating: 4.7, image: "/images/chipotle.jpg" }
-        ];
+        console.error("Error fetching favorite restaurants:", error);
+        throw error;
     }
 };
+
+
+
+
+// **Fetch Restaurants**
+// export const getRestaurants = async () => {
+//     try {
+//         const response = await axios.get(`${API_URL}/restaurants`);
+//         return response.data;
+//     } catch (error) {
+//         console.warn("@Backend not available, using placeholder data.");
+//         return [
+//             { id: 1, name: "Mcdonalds", cuisine: "Fast Food", rating: 4.5, image: "/images/burger.jpg" },
+//             { id: 2, name: "Annapoorna", cuisine: "Indian Cuisine", rating: 3.8, image: "/images/biryani.jpg" },
+//             { id: 3, name: "Urban Momo", cuisine: "Nepali Cuisine", rating: 4.2, image: "/images/momos.jpg" },
+//             { id: 4, name: "Chipotle Mexican Grill", cuisine: "Mexican, Fast Food", rating: 4.7, image: "/images/chipotle.jpg" }
+//         ];
+//     }
+// };
+
+export const getRestaurants = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/restaurants`, {withCredentials: true});
+        const favorites = await getFavoriteRestaurants(); // ✅ Get favorites
+        const favoriteIds = new Set(favorites.map(fav => fav.id));
+        return response.data.map(restaurant => ({
+            ...restaurant,
+            isFavorite: favoriteIds.has(restaurant.id)
+        }));
+    } catch (error) {
+        console.warn("Failed to load restaurants.");
+        throw error;
+    }
+};
+
 
 
 // ✅ Get all restaurants (Make sure to include authentication headers) gpt version
@@ -74,7 +125,7 @@ export const getRestaurants = async () => {
 // **Fetch Restaurant Details (Customer Side)**
 export const getRestaurantInfo = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/restaurants/${id}`);
+        const response = await axios.get(`${API_URL}/restaurants/${id}`,{withCredentials: true});
         return response.data;
     } catch (error) {
         console.warn(`#Backend not available for restaurant ${id}, using placeholder data.`);

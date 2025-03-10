@@ -1,4 +1,3 @@
-// Restaurant schema/model
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
@@ -10,7 +9,7 @@ const Restaurant = sequelize.define("Restaurant", {
     location: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT },
     contact_info: { type: DataTypes.STRING },
-    timings: { type: DataTypes.STRING },
+    timings: { type: DataTypes.STRING }
 }, { timestamps: true });
 
 module.exports = Restaurant;

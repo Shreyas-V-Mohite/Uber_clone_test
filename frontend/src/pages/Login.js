@@ -17,7 +17,8 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5001/api/auth/login", formData);
+            console.log("before login.")
+            const res = await axios.post("http://localhost:5001/api/auth/login", formData, { withCredentials: true });
             const { token, user } = res.data;
             console.log("token on login", token);
             localStorage.setItem("jwtToken", token); // Store the JWT token in local storage

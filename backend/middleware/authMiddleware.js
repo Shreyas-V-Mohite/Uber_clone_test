@@ -1,12 +1,37 @@
-const jwt = require('jsonwebtoken');
-
 // Middleware to protect routes using session
+// exports.protectRoute = (req, res, next) => {
+//     if (!req.session.user) {
+//         return res.status(401).json({ message: "Unauthorized access" });
+//     }
+//     next();
+// };
+const jwt = require("jsonwebtoken");
+
 exports.protectRoute = (req, res, next) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const authHeader = req.headers.authorization;
+
+    console.log("Authorization Header:", authHeader);
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Authorization header missing or invalid" });
     }
-    next();
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        // ✅ Decode token and attach user details to request
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
+        console.log("Decoded Token:", decoded);
+
+        req.user = decoded; // ✅ Attach user info to request object
+        next(); // ✅ Proceed to next middleware/controller
+    } catch (error) {
+        console.error("Invalid token:", error);
+        return res.status(401).json({ message: "Invalid or expired token" });
+    }
 };
+
+
 
 // Middleware to verify JWT token
 exports.verifyToken = (req, res, next) => {

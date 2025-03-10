@@ -41,17 +41,21 @@ const Dashboard = () => {
 
 
  const toggleFavorite = async (restaurantId) => {
-   setRestaurants((prevRestaurants) =>
-       prevRestaurants.map((restaurant) =>
-           restaurant.id === restaurantId
-               ? { ...restaurant, isFavorite: !restaurant.isFavorite }
-               : restaurant
-       )
-   );
-    // Call the API function from api.js
-   const selectedRestaurant = restaurants.find((r) => r.id === restaurantId);
-   await toggleFavoriteRestaurant(restaurantId, !selectedRestaurant?.isFavorite);
- };
+  setRestaurants((prevRestaurants) =>
+      prevRestaurants.map((restaurant) =>
+          restaurant.id === restaurantId
+              ? { ...restaurant, isFavorite: !restaurant.isFavorite }
+              : restaurant
+      )
+  );
+
+  try {
+      await toggleFavoriteRestaurant(restaurantId);
+  } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+  }
+};
+
 
 
 

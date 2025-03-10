@@ -16,6 +16,7 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+// ✅ Load all models dynamically
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -30,6 +31,14 @@ fs
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
+
+// ✅ Define associations manually here
+const { Restaurant, Favorite } = db;
+
+if (Restaurant && Favorite) {
+  Restaurant.hasMany(Favorite, { foreignKey: 'restaurantId', onDelete: 'CASCADE' });
+  Favorite.belongsTo(Restaurant, { foreignKey: 'restaurantId', onDelete: 'CASCADE' });
+}
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
