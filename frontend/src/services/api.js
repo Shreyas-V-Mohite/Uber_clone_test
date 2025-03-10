@@ -134,11 +134,11 @@ export const loginRestaurant = async (credentials) => {
 //     }
 // };
 // **Get Logged-in Restaurant Details**
-export const getRestaurantDetails = async () => {
+export const getRestaurantDetails = async (id) => {
     try {
         const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
-        console.log("token after retrival", token);
-        const response = await axios.get(`${API_URL}/restaurants/me`, {
+        console.log("token after retrieval", token);
+        const response = await axios.get(`${API_URL}/restaurants/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
         });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { getRestaurantDetails } from "../services/api";
 
 const RestaurantDetails = () => {
@@ -9,8 +9,13 @@ const RestaurantDetails = () => {
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
-            const data = await getRestaurantDetails(id);
-            setRestaurant(data);
+            try {
+                const data = await getRestaurantDetails(id);
+                console.log("Restaurant details data:", data); // Add this line to log the response data
+                setRestaurant(data);
+            } catch (error) {
+                console.error("Error fetching restaurant details:", error);
+            }
         };
         fetchRestaurantDetails();
     }, [id]);
@@ -35,15 +40,19 @@ const RestaurantDetails = () => {
                 </Col>
                 <Col md={4}>
                     <h4>Menu</h4>
-                    {restaurant.menu.map((item, index) => (
-                        <Card key={index} className="mb-3">
-                            <Card.Body>
-                                <Card.Title>{item.name}</Card.Title>
-                                <Card.Text>{item.description}</Card.Text>
-                                <Card.Text><strong>Price:</strong> ${item.price}</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    ))}
+                    {restaurant.menu && restaurant.menu.length > 0 ? (
+                        restaurant.menu.map((item, index) => (
+                            <Card key={index} className="mb-3">
+                                <Card.Body>
+                                    <Card.Title>{item.name}</Card.Title>
+                                    <Card.Text>{item.description}</Card.Text>
+                                    <Card.Text><strong>Price:</strong> ${item.price}</Card.Text>
+                                </Card.Body>
+                            </Card>
+                        ))
+                    ) : (
+                        <p>No menu items available.</p>
+                    )}
                 </Col>
             </Row>
         </Container>
