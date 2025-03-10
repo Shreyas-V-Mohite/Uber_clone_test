@@ -13,8 +13,6 @@ import GoogleMapsSearch from "../components/GoogleMapsSearch";
 
 
 
-
-// ✅ Categories for Filtering
 const categories = [
  { name: "Burger", icon: "🍔" }, { name: "Caribbean", icon: "🌴" }, { name: "Drinks", icon: "🥤" },
  { name: "Fast Food", icon: "🍟" }, { name: "Grocery", icon: "🛒" }, { name: "Dessert", icon: "🍰" },
@@ -80,21 +78,11 @@ const TopNavbar = () => (
    <Navbar.Brand href="#">Uber Eats</Navbar.Brand>
    {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
    {/* <Navbar.Collapse id="basic-navbar-nav"> */}
-
-
      <GoogleMapsSearch />
-  
-
-
      <Form className="d-flex mx-auto">
        <FormControl type="search" placeholder="Search Uber Eats" className="me-2" />
        <Button variant="outline-success"><FaSearch /></Button>
      </Form>
-
-
-    
-
-
      <Button variant="outline-dark" className="ms-2">
        <Link to="/cart" className="text-decoration-none text-dark">
          <FaShoppingCart />
@@ -129,64 +117,51 @@ const SortingButtons = () => (
  </div>
 );
 
-
-
-
 const FeaturedRestaurants = ({ restaurants, toggleFavorite }) => (
- <>
-   <h4 className="mb-4 fw-bold">Featured on Uber Eats</h4>
-   <Row className="g-4">
-     {restaurants.length > 0 ? (
-       restaurants.map((restaurant) => (
-         <Col key={restaurant.id} xs={12} sm={6} md={4} lg={3}>
-           <Card className="shadow-sm border-0 position-relative"
-             style={{ height: "350px" }} // Increased height
-           >
-            
-             {/* Heart Icon for Favorite */}
-             <div
-               className="position-absolute top-0 end-0 p-2"
-               style={{ cursor: "pointer", zIndex: 2 }}
-               onClick={(e) => {
-                   e.preventDefault();
-                   toggleFavorite(restaurant.id);
-               }}
-             >
-               {restaurant.isFavorite ? (
-                 <FaHeart size={22} color="red" />
-               ) : (
-                 <FaRegHeart size={22} color="white" className="opacity-75" />
-               )}
-             </div>
-
-
-             {/* Restaurant Image */}
-             <Card.Img
-               variant="top"
-               src={restaurant.image}
-               className="rounded-top"
-               style={{ height: "270px", objectFit: "cover" }} // Adjusted height
-             />
-
-
-             {/* Rating Badge */}
-             <div className="position-absolute bottom-0 end-0 m-2 bg-white text-dark px-2 py-1 rounded-pill fw-bold shadow-sm">
-               ⭐ {restaurant.rating}
-             </div>
-
-
-             <Card.Body className="text-center">
-               <Card.Title className="fw-bold">{restaurant.name}</Card.Title>
-               <Card.Text className="text-muted small">{restaurant.cuisine}</Card.Text>
-             </Card.Body>
-           </Card>
-         </Col>
-       ))
-     ) : (
-       <p className="text-center">Loading restaurants...</p>
-     )}
-   </Row>
- </>
+  <>
+    <h4 className="mb-4 fw-bold">Featured  on Uber Eats</h4>
+    <Row className="g-4">
+      {restaurants.length > 0 ? (
+        restaurants.map((restaurant) => (
+          <Col key={restaurant.id} xs={12} sm={6} md={4} lg={3}>
+            <Link to={`/restaurants/${restaurant.id}`} className="text-decoration-none">
+              <Card className="shadow-sm border-0 position-relative" style={{ height: "350px" }}>
+                <div 
+                  className="position-absolute top-0 end-0 p-2"
+                  style={{ cursor: "pointer", zIndex: 2 }}
+                  onClick={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(restaurant.id);
+                  }}
+                >
+                  {restaurant.isFavorite ? (
+                    <FaHeart size={22} color="red" />
+                  ) : (
+                    <FaRegHeart size={22} color="white" className="opacity-75" />
+                  )}
+                </div>
+                <Card.Img
+                  variant="top"
+                  src={restaurant.image}
+                  className="rounded-top"
+                  style={{ height: "270px", objectFit: "cover" }}
+                />
+                <div className="position-absolute bottom-0 end-0 m-2 bg-white text-dark px-2 py-1 rounded-pill fw-bold shadow-sm">
+                  ⭐ {restaurant.rating}
+                </div>
+                <Card.Body className="text-center">
+                  <Card.Title className="fw-bold">{restaurant.name}</Card.Title>
+                  <Card.Text className="text-muted small">{restaurant.cuisine}</Card.Text>
+                </Card.Body>
+              </Card>
+            </Link>
+          </Col>
+        ))
+      ) : (
+        <p className="text-center">Loading restaurants...</p>
+      )}
+    </Row>
+  </>
 );
 
 export default Dashboard;

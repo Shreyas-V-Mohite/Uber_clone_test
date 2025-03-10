@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button, Table, Form } from "react-bootstrap";
-import { getRestaurantDetails, getOrdersByRestaurant, addDish, deleteDish } from "../services/api";
+import { getRestaurantDetails, getOrdersByRestaurant, addDish, deleteDish, updateOrderStatus } from "../services/api";
 
 const RestaurantDashboard = () => {
     const [restaurant, setRestaurant] = useState(null);
@@ -40,6 +40,44 @@ const RestaurantDashboard = () => {
         setDishes(dishes.filter(dish => dish.id !== dishId));
     };
 
+    // Handle updating order status
+    // const handleUpdateOrderStatus = async (orderId, status) => {
+    //     console.log("orderId in handleUpdateOrderStatus", orderId);
+    //     console.log("status in handleUpdateOrderStatus", status);
+    //     try {
+    //         const updatedOrder = await updateOrderStatus(orderId, status);
+    //         // setOrders(orders.map(order => order.id === orderId ? updatedOrder : order));
+    //         setOrders(orders.map(order => order.id === orderId ? { ...order, status: updatedOrder.status } : order));
+            
+    //         // await 
+    //         console.log("updatedOrder in handleUpdateOrderStatus he navin ahe", updatedOrder);
+    //     } catch (error) {
+    //         console.error("Error updating order status:", error);
+    //     }
+    // };
+
+    const handleUpdateOrderStatus = async (orderId, status) => {
+        console.log("orderId in handleUpdateOrderStatus", orderId);
+        console.log("status in handleUpdateOrderStatus", status);
+        
+        try {
+            // Call API to update order status
+            await updateOrderStatus(orderId, status);
+    
+            // Update state immediately without waiting for re-fetch
+            setOrders(prevOrders =>
+                prevOrders.map(order =>
+                    order.id === orderId ? { ...order, status } : order // Directly update status in UI
+                )
+            );
+    
+            console.log("Order status updated successfully.");
+        } catch (error) {
+            console.error("Error updating order status:", error);
+        }
+    };
+    
+
     return (
         <Container className="mt-4">
             <h2>Restaurant Dashboard</h2>
@@ -61,6 +99,7 @@ const RestaurantDashboard = () => {
                         <th>Order ID</th>
                         <th>Customer</th>
                         <th>Items</th>
+                        {/* <th>Status</th> */}
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -71,17 +110,30 @@ const RestaurantDashboard = () => {
                                 <td>{order.id}</td>
                                 <td>{order.customerName}</td>
                                 <td>
-                                    {order.items.map((item, index) => (
+                                    {order.items && order.items.map((item, index) => (
                                         <div key={index}>
                                             {item.dish_id} - {item.quantity} x ${item.price}
                                         </div>
                                     ))}
                                 </td>
-                                <td>{order.status}</td>
+                                {/* <td>{order.status}</td> */}
+                                <td>
+                                    <Form.Select
+                                        value={order.status}
+                                        onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                                    >
+                                        <option value="Pending">Pending</option>
+                                        <option value="Accepted">Accepted</option>
+                                        <option value="Preparing">Preparing</option>
+                                        <option value="Out for Delivery">Ready</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </Form.Select>
+                                </td>
                             </tr>
                         ))
                     ) : (
-                        <tr><td colSpan="4" className="text-center">No orders yet</td></tr>
+                        <tr><td colSpan="5" className="text-center">No orders yet</td></tr>
                     )}
                 </tbody>
             </Table>

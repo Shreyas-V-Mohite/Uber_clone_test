@@ -176,6 +176,36 @@ export const getOrdersByRestaurant = async (restaurantId) => {
 };
 // -----------------------------------
 // Restaurant Dasboard
+
+// **Update Order Status**
+// export const updateOrderStatus = async (orderId, status) => {
+//     try {
+//         const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+//         const response = await axios.put(`${API_URL}/orders/${orderId}/status`, { status }, {
+//             headers: { Authorization: `Bearer ${token}` },
+//             withCredentials: true,
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error updating order status:", error);
+//         throw error;
+//     }
+// };
+
+export const updateOrderStatus = async (orderId, status) => {
+    try {
+        const token = localStorage.getItem("jwtToken"); // Retrieve JWT from local storage
+        const response = await axios.put(`${API_URL}/orders/status/${orderId}`, { status }, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
+        console.log("response in updateOrderStatus", response);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        throw error;
+    }
+};
 // **Add a New Dish**
 export const addDish = async (dishData) => {
     try {

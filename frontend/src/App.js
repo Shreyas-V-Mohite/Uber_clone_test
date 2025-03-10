@@ -16,6 +16,7 @@ import { useLocation } from "react-router-dom";
 import RestaurantSignup from "./pages/RestaurantSignup";
 import RestaurantLogin from "./pages/RestaurantLogin";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
+import RestaurantDetails from "./pages/RestaurantDetails";
 
 function LandingPage() {
     return (
@@ -55,11 +56,13 @@ function App() {
         <>
             <Navbar />
             <Routes>
+            {/* <Route path="/" element={!user && !restaurant ? <Home /> : user ? <Dashboard /> : <RestaurantDashboard />} /> */}
                 <Route path="/" element={!user ? <Home /> : <Dashboard />} />
                 <Route path="/signup" element={!user ? <Signup /> : <Dashboard />} />
                 <Route path="/login" element={!user ? <Login /> : <Dashboard />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/restaurants/:id" element={<Menu />} />
+                {/* <Route path="/restaurants/:id" element={<Menu />} /> */}
+                <Route path="/restaurants/:id" element={<RestaurantDetails />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/favourite" element={<Favourite />} />
                 {/* <Route path="/restaurant-signup" element={!user ? <RestaurantSignup />: <Home />} />*/}
