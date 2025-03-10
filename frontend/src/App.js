@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Favourite  from "./pages/Favourites";
+import Profile from "./pages/CustomerProfile";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Menu from "./pages/Menu";
@@ -32,7 +33,7 @@ function App() {
     // Redirect to dashboard when user logs in
     useEffect(() => {
 
-    const allowedRoutes = ["/cart", "/restaurants/:id", "/dashboard", "/favourite", "/restaurant-dashboard"]; // ✅ Expandable list
+    const allowedRoutes = ["/cart", "/restaurants/:id", "/dashboard", "/favourite", "/restaurant-dashboard", "/customer-profile"]; // ✅ Expandable list
 
     const isAllowed = allowedRoutes.some((route) => 
         location.pathname.startsWith(route.replace(":id", "")) // ✅ Handle dynamic routes
@@ -69,6 +70,7 @@ function App() {
                 <Route path="/restaurant-login" element={!restaurant ? <RestaurantLogin /> : <RestaurantDashboard />} />
                 <Route path="/restaurant-dashboard" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
 
+                <Route path="/customer-profile" element={<Profile />} />
             </Routes>
             <Footer />
         </>

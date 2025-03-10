@@ -3,6 +3,7 @@ const { signup, login, logout, getCurrentUser } = require("../controllers/authCo
 const { protectRoute, verifyToken } = require("../middleware/authMiddleware");
 const { signup: restaurantSignup, login: restaurantLogin, getRestaurantDetails, getCurrentRestaurant } = require("../controllers/restaurantController");
 const { addDish } = require("../controllers/dishController");
+const  Customer  = require("../models/Customer");
 
 const router = express.Router();
 
@@ -24,6 +25,36 @@ router.post("/", verifyToken, addDish); // ✅ Access `addDish` correctly
 // router.get("/protected", protectRoute, (req, res) => {
 //   res.json({ message: "You are authorized", user: req.session.user });
 // });
+
+router.get("/:email", async (req, res) => {
+  try {
+    const customer = await Customer.findOne({ where: { email: req.params.email } });
+    if (!customer) return res.status(404).json({ message: "Customer not found" });
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/:email", async (req, res) => {
+  try {
+    console.log("req.body", req.body);
+    
+    const { name, dob, city, state, country, phone, profilePicture } = req.body;
+    const customer = await Customer.findOne({ where: { email: req.params.email } });;
+    console.log("customer", customer);
+    
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    await customer.update({ name, dob, city, state, country, phone, profilePicture });
+    res.json({ message: "Profile updated successfully", customer });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;
 
