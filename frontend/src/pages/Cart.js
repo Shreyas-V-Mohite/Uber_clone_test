@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Form, Alert } from "react-bootstrap"
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../services/api"; // Import API function
+import AddressSearch from "../components/AddressesSearch";
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -127,10 +128,13 @@ const Cart = () => {
                                 <p><strong>Subtotal:</strong> ${(order.items.reduce((acc, item) => acc + item.price * item.quantity, 0)).toFixed(2)}</p>
                                 <p><strong>Delivery Fee:</strong> ${deliveryFee.toFixed(2)}</p>
                                 <h5><strong>Total:</strong> ${(order.items.reduce((acc, item) => acc + item.price * item.quantity, 0) + deliveryFee).toFixed(2)}</h5>
-
+{/* 
                                 <Form.Group className="mb-2">
                                     <Form.Control type="text" placeholder="Enter delivery address" />
-                                </Form.Group>
+                                </Form.Group> */}
+                                <h6>Enter Delivery address here</h6>
+
+                                <AddressSearch/>
 
                                 <Form.Group className="mb-3">
                                     <Form.Check type="checkbox" label="Pick up instead of delivery" />

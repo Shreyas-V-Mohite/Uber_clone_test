@@ -9,8 +9,7 @@ import Sidebar from "../components/Sidebar";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import { getRestaurants, toggleFavoriteRestaurant } from "../services/api";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import GoogleMapsSearch from "../components/GoogleMapsSearch";
-
+import AddressSearch from "../components/AddressesSearch";
 
 
 const categories = [
@@ -82,11 +81,16 @@ const TopNavbar = () => (
    <Navbar.Brand href="#">Uber Eats</Navbar.Brand>
    {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
    {/* <Navbar.Collapse id="basic-navbar-nav"> */}
-     <GoogleMapsSearch />
+
+
+
+    <AddressSearch/>
+    
      <Form className="d-flex mx-auto">
        <FormControl type="search" placeholder="Search Uber Eats" className="me-2" />
        <Button variant="outline-success"><FaSearch /></Button>
      </Form>
+     
      <Button variant="outline-dark" className="ms-2">
        <Link to="/cart" className="text-decoration-none text-dark">
          <FaShoppingCart />
@@ -141,7 +145,7 @@ const FeaturedRestaurants = ({ restaurants, toggleFavorite }) => (
                   {restaurant.isFavorite ? (
                     <FaHeart size={22} color="red" />
                   ) : (
-                    <FaRegHeart size={22} color="white" className="opacity-75" />
+                    <FaRegHeart size={22} color="black" className="opacity-75" />
                   )}
                 </div>
                 <Card.Img
