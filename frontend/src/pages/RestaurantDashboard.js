@@ -5,8 +5,10 @@ import { getRestaurantDetails, getOrdersByRestaurant, getDishesByRestaurant, add
 const RestaurantDashboard = () => {
     const [restaurant, setRestaurant] = useState(null);
     const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]); // ✅ State for filtered orders
     const [dishes, setDishes] = useState([]);
     const [newDish, setNewDish] = useState({ name: "", description: "", price: "", category: "", image: "" });
+    const [filterStatus, setFilterStatus] = useState("All"); // ✅ State for selected status
 
     // Fetch restaurant details, orders, and dishes
     useEffect(() => {
@@ -18,10 +20,9 @@ const RestaurantDashboard = () => {
                 }
                 const restaurantData = await getRestaurantDetails(storedRestaurant.id);
                 setRestaurant(restaurantData);
-                console.log("restaurantData.........", restaurantData);
                 const ordersData = await getOrdersByRestaurant(restaurantData.id);
-                console.log("ordersData.........", ordersData);
                 setOrders(ordersData);
+                setFilteredOrders(ordersData); // ✅ Initialize filtered orders
 
                 const dishesData = await getDishesByRestaurant(restaurantData.id);
                 setDishes(dishesData);
@@ -32,7 +33,16 @@ const RestaurantDashboard = () => {
         fetchData();
     }, []);
 
-    // Handle adding a dish
+    // ✅ Filter orders based on status
+    useEffect(() => {
+        if (filterStatus === "All") {
+            setFilteredOrders(orders);
+        } else {
+            setFilteredOrders(orders.filter(order => order.status === filterStatus));
+        }
+    }, [filterStatus, orders]);
+
+    // ✅ Handle adding a dish
     const handleAddDish = async (e) => {
         e.preventDefault();
         const addedDish = await addDish({ ...newDish, restaurant_id: restaurant.id });
@@ -40,29 +50,21 @@ const RestaurantDashboard = () => {
         setNewDish({ name: "", description: "", price: "", category: "", image: "" });
     };
 
-    // Handle deleting a dish
+    // ✅ Handle deleting a dish
     const handleDeleteDish = async (dishId) => {
         await deleteDish(dishId);
         setDishes(dishes.filter(dish => dish.id !== dishId));
     };
 
-    // Handle updating order status
+    // ✅ Handle updating order status
     const handleUpdateOrderStatus = async (orderId, status) => {
-        console.log("orderId in handleUpdateOrderStatus", orderId);
-        console.log("status in handleUpdateOrderStatus", status);
-        
         try {
-            // Call API to update order status
             await updateOrderStatus(orderId, status);
-    
-            // Update state immediately without waiting for re-fetch
             setOrders(prevOrders =>
                 prevOrders.map(order =>
-                    order.id === orderId ? { ...order, status } : order // Directly update status in UI
+                    order.id === orderId ? { ...order, status } : order
                 )
             );
-    
-            console.log("Order status updated successfully.");
         } catch (error) {
             console.error("Error updating order status:", error);
         }
@@ -81,7 +83,29 @@ const RestaurantDashboard = () => {
                 </Card>
             )}
 
-            {/* Orders Table */}
+            {/* ✅ Filter Dropdown */}
+            <Row className="mb-3 align-items-center">
+                <Col md={2}>
+                    <strong>Filter by Status:</strong>
+                </Col>
+                <Col md={4}>
+                    <Form.Select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                        <option value="All">All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Preparing">Preparing</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </Form.Select>
+                </Col>
+            </Row>
+
+
+            {/* ✅ Orders Table */}
             <h4>Orders</h4>
             <Table striped bordered hover>
                 <thead>
@@ -93,13 +117,13 @@ const RestaurantDashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {orders.length > 0 ? (
-                        orders.map((order) => (
+                    {filteredOrders.length > 0 ? (
+                        filteredOrders.map((order) => (
                             <tr key={order.id}>
                                 <td>{order.id}</td>
-                                <td>{order.Customer.name}</td> {/* Updated to display customer name */}
+                                <td>{order.Customer.name}</td>
                                 <td>
-                                    {order.items && order.items.map((item, index) => (
+                                    {order.items.map((item, index) => (
                                         <div key={index}>
                                             {item.dish_id} - {item.quantity} x ${item.price}
                                         </div>
@@ -113,7 +137,7 @@ const RestaurantDashboard = () => {
                                         <option value="Pending">Pending</option>
                                         <option value="Accepted">Accepted</option>
                                         <option value="Preparing">Preparing</option>
-                                        <option value="Out for Delivery">Ready</option>
+                                        <option value="Out for Delivery">Out for Delivery</option>
                                         <option value="Delivered">Delivered</option>
                                         <option value="Cancelled">Cancelled</option>
                                     </Form.Select>
@@ -121,12 +145,12 @@ const RestaurantDashboard = () => {
                             </tr>
                         ))
                     ) : (
-                        <tr><td colSpan="5" className="text-center">No orders yet</td></tr>
+                        <tr><td colSpan="5" className="text-center">No orders available</td></tr>
                     )}
                 </tbody>
             </Table>
 
-            {/* Dish Management */}
+            {/* ✅ Dish Management */}
             <h4>Manage Dishes</h4>
             <Row>
                 {dishes.map((dish) => (
@@ -144,16 +168,28 @@ const RestaurantDashboard = () => {
                 ))}
             </Row>
 
-            {/* Add New Dish */}
+            {/* ✅ Add New Dish */}
             <h4>Add a New Dish</h4>
             <Form onSubmit={handleAddDish}>
                 <Row>
-                    <Col md={3}><Form.Control type="text" placeholder="Dish Name" value={newDish.name} onChange={(e) => setNewDish({ ...newDish, name: e.target.value })} required /></Col>
-                    <Col md={3}><Form.Control type="text" placeholder="Description" value={newDish.description} onChange={(e) => setNewDish({ ...newDish, description: e.target.value })} required /></Col>
-                    <Col md={2}><Form.Control type="number" placeholder="Price" value={newDish.price} onChange={(e) => setNewDish({ ...newDish, price: e.target.value })} required /></Col>
-                    <Col md={2}><Form.Control type="text" placeholder="Category" value={newDish.category} onChange={(e) => setNewDish({ ...newDish, category: e.target.value })} required /></Col>
-                    <Col md={2}><Form.Control type="text" placeholder="Image URL" value={newDish.image} onChange={(e) => setNewDish({ ...newDish, image: e.target.value })} required /></Col>
-                    <Col md={12} className="mt-2"><Button type="submit" variant="success">Add Dish</Button></Col>
+                    <Col md={3}>
+                        <Form.Control type="text" placeholder="Dish Name" value={newDish.name} onChange={(e) => setNewDish({ ...newDish, name: e.target.value })} required />
+                    </Col>
+                    <Col md={3}>
+                        <Form.Control type="text" placeholder="Description" value={newDish.description} onChange={(e) => setNewDish({ ...newDish, description: e.target.value })} required />
+                    </Col>
+                    <Col md={2}>
+                        <Form.Control type="number" placeholder="Price" value={newDish.price} onChange={(e) => setNewDish({ ...newDish, price: e.target.value })} required />
+                    </Col>
+                    <Col md={2}>
+                        <Form.Control type="text" placeholder="Category" value={newDish.category} onChange={(e) => setNewDish({ ...newDish, category: e.target.value })} required />
+                    </Col>
+                    <Col md={2}>
+                        <Form.Control type="text" placeholder="Image URL" value={newDish.image} onChange={(e) => setNewDish({ ...newDish, image: e.target.value })} required />
+                    </Col>
+                    <Col md={12} className="mt-2">
+                        <Button type="submit" variant="success">Add Dish</Button>
+                    </Col>
                 </Row>
             </Form>
         </Container>

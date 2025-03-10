@@ -81,7 +81,8 @@ export const getRestaurants = async () => {
         const favoriteIds = new Set(favorites.map(fav => fav.id));
         return response.data.map(restaurant => ({
             ...restaurant,
-            isFavorite: favoriteIds.has(restaurant.id)
+            isFavorite: favoriteIds.has(restaurant.id),
+            rating: (Math.random() * 5).toFixed(1),
         }));
     } catch (error) {
         console.warn("Failed to load restaurants.");
