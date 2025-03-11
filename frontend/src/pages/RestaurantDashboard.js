@@ -10,6 +10,7 @@ const RestaurantDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]); // ✅ State for filtered orders
     const [dishes, setDishes] = useState([]);
+    const [filterStatus, setFilterStatus] = useState("All"); // ✅ State for order status filter
 
     const [newDish, setNewDish] = useState({ 
         name: "", 

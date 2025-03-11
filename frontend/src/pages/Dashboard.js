@@ -8,7 +8,8 @@ import { Navigation } from "swiper/modules";
 import Sidebar from "../components/Sidebar";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import { getRestaurants, toggleFavoriteRestaurant } from "../services/api";
-import GoogleMapsSearch from "../components/GoogleMapsSearch";
+import AddressSearch from "../components/AddressesSearch";
+// import GoogleMapsSearch from "../components/GoogleMapsSearch";
 
 const categories = [
     { name: "Burger", icon: "🍔" }, { name: "Caribbean", icon: "🌴" }, { name: "Drinks", icon: "🥤" },
@@ -20,7 +21,7 @@ const categories = [
 
 const Dashboard = () => {
     const [restaurants, setRestaurants] = useState([]);
-
+    const [sortOrder, setSortOrder] = useState(null);
     // ✅ Fetch Restaurants on Component Mount
     useEffect(() => {
         const fetchData = async () => {
@@ -34,6 +35,21 @@ const Dashboard = () => {
         };
         fetchData();
     }, []);
+
+    const handleSort = (order) => {
+        console.log(`Sorting by rating: ${order}`);
+        setSortOrder(order);
+    
+        const sortedRestaurants = [...restaurants].sort((a, b) => {
+          if (order === "asc") {
+            return a.rating - b.rating;
+          } else if (order === "desc") {
+            return b.rating - a.rating;
+          }
+          return 0;
+        });
+        setRestaurants(sortedRestaurants);
+        };
 
     const toggleFavorite = async (restaurantId) => {
         setRestaurants((prevRestaurants) =>
@@ -53,7 +69,7 @@ const Dashboard = () => {
             <TopNavbar />
             <Container className="mt-4">
                 <CategorySwiper />
-                <SortingButtons />
+                <SortingButtons handleSort={handleSort} />
                 <FeaturedRestaurants restaurants={restaurants} toggleFavorite={toggleFavorite} />
             </Container>
         </>
@@ -65,7 +81,7 @@ const TopNavbar = () => (
     <Navbar bg="light" expand="lg" className="px-4 shadow-sm">
         <Sidebar /> {/* Sidebar Button */}
         <Navbar.Brand href="#">Uber Eats</Navbar.Brand>
-        <GoogleMapsSearch />
+        <AddressSearch />
         <Form className="d-flex mx-auto">
             <FormControl type="search" placeholder="Search Uber Eats" className="me-2" />
             <Button variant="outline-success"><FaSearch /></Button>
@@ -93,13 +109,26 @@ const CategorySwiper = () => (
 );
 
 // ✅ Extracted Sorting Buttons Component
-const SortingButtons = () => (
+// const SortingButtons = () => (
+//     <div className="d-flex justify-content-center my-3">
+//         <Button variant="outline-secondary" className="me-2">Rating: Low to High</Button>
+//         <Button variant="outline-secondary" className="me-2">Rating: High to Low</Button>
+//         <Button variant="outline-secondary">Reset</Button>
+//     </div>
+// );
+const SortingButtons = ({ handleSort }) => (
     <div className="d-flex justify-content-center my-3">
-        <Button variant="outline-secondary" className="me-2">Rating: Low to High</Button>
-        <Button variant="outline-secondary" className="me-2">Rating: High to Low</Button>
-        <Button variant="outline-secondary">Reset</Button>
+      <Button variant="outline-secondary" className="me-2" onClick={() => handleSort("asc")}>
+        Rating: Low to High
+      </Button>
+      <Button variant="outline-secondary" className="me-2" onClick={() => handleSort("desc")}>
+        Rating: High to Low
+      </Button>
+      <Button variant="outline-secondary" onClick={() => handleSort(null)}>
+        Reset
+      </Button>
     </div>
-);
+  );
 
 const FeaturedRestaurants = ({ restaurants, toggleFavorite }) => (
     <>

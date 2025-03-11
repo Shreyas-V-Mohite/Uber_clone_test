@@ -9,8 +9,6 @@ const Profile = () => {
   const token = localStorage.getItem("jwtToken");
 console.log("Token", token);
     
-    
-    
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
     name: "",

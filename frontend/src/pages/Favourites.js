@@ -11,6 +11,7 @@ const Favourite = () => {
             try {
                 const data = await getFavoriteRestaurants();
                 setFavorites(data);
+                console.log("Favorite Restaurants data in setFav:", data);
             } catch (error) {
                 console.error("Failed to fetch favorite restaurants:", error);
             }

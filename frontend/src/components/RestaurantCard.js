@@ -1,9 +1,12 @@
 import React from "react";
 import { Card, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+// import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const RestaurantCard = ({ restaurant, toggleFavorite }) => {
+  const imagesArray = restaurant.images ? restaurant.images.split(",") : [];
+  const lastImage = imagesArray.length > 0 ? imagesArray[imagesArray.length - 1] : null;
+  console.log('lastimage',lastImage)
   return (
     <Col key={restaurant.id} xs={12} sm={6} md={4} lg={3}>
       <Link to={`/restaurants/${restaurant.id}`} className="text-decoration-none">
@@ -22,7 +25,7 @@ const RestaurantCard = ({ restaurant, toggleFavorite }) => {
           {/* Restaurant Image */}
           <Card.Img
             variant="top"
-            src={restaurant.image}
+            src={`http://localhost:9000/images/${lastImage}`}
             className="rounded-top"
             style={{ height: "270px", objectFit: "cover" }}
           />
